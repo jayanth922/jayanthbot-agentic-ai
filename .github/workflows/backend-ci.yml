@@ -1,0 +1,41 @@
+name: Backend CI
+
+on:
+  push:
+    paths:
+      - 'backend/**'
+    branches: [main]
+  pull_request:
+    paths:
+      - 'backend/**'
+    branches: [main]
+
+jobs:
+  test-and-lint:
+    name: Test & Lint Backend
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Set up Python 3.11
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.11'
+
+      - name: Install dependencies
+        run: |
+          cd backend
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+          pip install flake8 pytest
+
+      - name: Lint with flake8
+        run: |
+          cd backend
+          flake8 .
+
+      - name: Run unit tests
+        run: |
+          cd backend
+          pytest --maxfail=1 --disable-warnings -q
